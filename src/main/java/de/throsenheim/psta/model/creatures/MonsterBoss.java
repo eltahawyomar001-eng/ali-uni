@@ -9,29 +9,16 @@ import java.util.List;
 import java.util.Random;
 
 /**
- * MonsterBoss class - a powerful enemy with special enrage ability.
- * The boss becomes stronger when its health drops below 50%.
+ * MonsterBoss - strong enemy that gets stronger when health is low.
  */
 public class MonsterBoss extends Creature {
     
-    private static final double ENRAGE_THRESHOLD = 0.5;
-    private static final double ENRAGE_MULTIPLIER = 1.5;
+    private static final double ENRAGE_THRESHOLD = 0.5;      // 50% health
+    private static final double ENRAGE_MULTIPLIER = 1.5;     // 1.5x damage
     
     private final Random random;
     private boolean enraged;
     
-    /**
-     * Creates a new MonsterBoss with the specified attributes.
-     * 
-     * @param name the boss's name
-     * @param health the boss's health points
-     * @param attackPower the boss's attack power
-     * @param defense the boss's defense value
-     * @param initiative the boss's initiative
-     * @param team the boss's team
-     * @param random random number generator for combat calculations
-     * @throws InvalidCreatureStateException if any attribute is invalid
-     */
     public MonsterBoss(String name, int health, int attackPower, int defense, int initiative, Team team, Random random) 
             throws InvalidCreatureStateException {
         super(name, health, attackPower, defense, initiative, team);
@@ -39,15 +26,9 @@ public class MonsterBoss extends Creature {
         this.enraged = false;
     }
     
-    /**
-     * Calculates damage with enrage bonus when health is low.
-     * 
-     * @param target the creature being attacked
-     * @return the calculated damage amount
-     */
+    // Does more damage when health is low
     @Override
     protected int calculateDamage(Creature target) {
-        // Check for enrage
         if (!enraged && getHealthPercentage() <= ENRAGE_THRESHOLD) {
             enraged = true;
             System.out.println("  >>> " + getName() + " ENRAGES! Attack power increased! <<<");
@@ -61,11 +42,7 @@ public class MonsterBoss extends Creature {
         return baseDamage;
     }
     
-    /**
-     * Performs the boss's action: attack random enemy with preference for low-defense targets.
-     * 
-     * @param battlefield the battlefield context
-     */
+    // Attacks enemies with low defense
     @Override
     public void performRoundAction(Battlefield battlefield) {
         if (!isAlive()) {
@@ -77,7 +54,7 @@ public class MonsterBoss extends Creature {
             return;
         }
         
-        // Boss targets low-defense enemies (intelligent targeting)
+        // Target low-defense enemies
         Creature target = enemies.stream()
                 .min((a, b) -> Integer.compare(a.getDefense(), b.getDefense()))
                 .orElse(null);

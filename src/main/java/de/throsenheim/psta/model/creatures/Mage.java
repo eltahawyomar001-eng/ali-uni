@@ -9,8 +9,7 @@ import java.util.List;
 import java.util.Random;
 
 /**
- * Mage class - a magical attacker with high damage but low defense.
- * Mages can deal area-of-effect damage to multiple enemies.
+ * Mage - magic user that can attack multiple enemies.
  */
 public class Mage extends Creature {
     
@@ -20,43 +19,21 @@ public class Mage extends Creature {
     private final Random random;
     private int manaPool;
     
-    /**
-     * Creates a new Mage with the specified attributes.
-     * 
-     * @param name the mage's name
-     * @param health the mage's health points
-     * @param attackPower the mage's spell power
-     * @param defense the mage's defense value
-     * @param initiative the mage's initiative
-     * @param team the mage's team
-     * @param random random number generator for combat calculations
-     * @throws InvalidCreatureStateException if any attribute is invalid
-     */
     public Mage(String name, int health, int attackPower, int defense, int initiative, Team team, Random random) 
             throws InvalidCreatureStateException {
         super(name, health, attackPower, defense, initiative, team);
         this.random = random != null ? random : new Random();
-        this.manaPool = 3; // Can do 3 AOE attacks before single-target only
+        this.manaPool = 3;  // Can do 3 AOE attacks
     }
     
-    /**
-     * Calculates magical damage with random variance.
-     * 
-     * @param target the creature being attacked
-     * @return the calculated damage amount
-     */
+    // Magic damage varies a bit
     @Override
     protected int calculateDamage(Creature target) {
-        // Magical damage has variance: 80% to 120% of attack power
         double variance = 0.8 + (random.nextDouble() * 0.4);
         return (int) (getAttackPower() * variance);
     }
     
-    /**
-     * Performs the mage's action: AOE attack if mana available, otherwise single target.
-     * 
-     * @param battlefield the battlefield context
-     */
+    // Does AOE if has mana, otherwise single target
     @Override
     public void performRoundAction(Battlefield battlefield) {
         if (!isAlive()) {
@@ -68,12 +45,12 @@ public class Mage extends Creature {
             return;
         }
         
-        // Use AOE if mana available and multiple enemies
+        // Use AOE if have mana and multiple enemies
         if (manaPool > 0 && enemies.size() >= 2) {
             performAoeAttack(enemies);
             manaPool--;
         } else {
-            // Single target - attack highest health enemy
+            // Single target - attack highest health
             Creature target = enemies.stream()
                     .max((a, b) -> Integer.compare(a.getHealth(), b.getHealth()))
                     .orElse(null);
@@ -84,11 +61,7 @@ public class Mage extends Creature {
         }
     }
     
-    /**
-     * Performs an area-of-effect attack hitting multiple enemies.
-     * 
-     * @param enemies the list of available enemies
-     */
+    // Hit multiple enemies at once
     private void performAoeAttack(List<Creature> enemies) {
         System.out.println(getName() + " casts FIREBALL (AOE)!");
         

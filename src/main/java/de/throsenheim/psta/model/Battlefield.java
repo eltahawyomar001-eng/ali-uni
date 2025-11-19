@@ -6,9 +6,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * Battlefield class - the game engine that manages the battle simulation.
- * This class coordinates rounds, manages all creatures using collections,
- * and determines when the game ends.
+ * Battlefield - runs the battle simulation.
  */
 public class Battlefield {
     
@@ -18,12 +16,6 @@ public class Battlefield {
     private int currentRound;
     private Team winnerTeam;
     
-    /**
-     * Creates a new Battlefield with the specified maximum rounds.
-     * 
-     * @param maxRounds the maximum number of rounds before the game ends
-     * @throws GameConfigurationException if maxRounds is invalid
-     */
     public Battlefield(int maxRounds) {
         if (maxRounds <= 0) {
             throw new GameConfigurationException("Max rounds must be positive, got: " + maxRounds);
@@ -40,12 +32,7 @@ public class Battlefield {
         teamMap.put(Team.MONSTERS, new ArrayList<>());
     }
     
-    /**
-     * Adds a creature to the battlefield.
-     * 
-     * @param creature the creature to add
-     * @throws GameConfigurationException if creature is null or has duplicate name
-     */
+    // Add a creature to the battlefield
     public void addCreature(Creature creature) {
         if (creature == null) {
             throw new GameConfigurationException("Cannot add null creature");
@@ -64,10 +51,7 @@ public class Battlefield {
         teamMap.get(creature.getTeam()).add(creature);
     }
     
-    /**
-     * Starts the battle simulation and runs until completion.
-     * The battle ends when one team is eliminated or max rounds is reached.
-     */
+    // Runs the battle
     public void startBattle() {
         if (allCreatures.isEmpty()) {
             throw new GameConfigurationException("Cannot start battle with no creatures");

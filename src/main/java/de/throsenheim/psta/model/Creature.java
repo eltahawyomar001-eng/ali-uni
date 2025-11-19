@@ -6,12 +6,8 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * Abstract base class representing a creature in the battle simulation.
- * This class demonstrates inheritance, abstraction, and implements Comparable
- * for natural ordering by initiative (turn order).
- * 
- * All creatures have basic attributes like health, attack power, defense, and initiative.
- * Concrete subclasses must implement the attack logic and action behavior.
+ * Base class for all creatures in the game.
+ * This is abstract so you can't create a plain Creature, only specific types.
  */
 public abstract class Creature implements ActionPerRound, Comparable<Creature>, Cloneable {
     
@@ -28,15 +24,8 @@ public abstract class Creature implements ActionPerRound, Comparable<Creature>, 
     private boolean alive;
     
     /**
-     * Constructs a new Creature with the specified attributes.
-     * 
-     * @param name the name of the creature
-     * @param health the initial health points
-     * @param attackPower the base attack power
-     * @param defense the defense value (reduces incoming damage)
-     * @param initiative the initiative value (higher acts first)
-     * @param team the team this creature belongs to
-     * @throws InvalidCreatureStateException if any attribute is invalid
+     * Makes a new creature.
+     * Checks if all the values make sense.
      */
     public Creature(String name, int health, int attackPower, int defense, int initiative, Team team) 
             throws InvalidCreatureStateException {
@@ -68,19 +57,13 @@ public abstract class Creature implements ActionPerRound, Comparable<Creature>, 
     }
     
     /**
-     * Calculates the damage this creature deals to a target.
-     * This is an abstract method that subclasses must implement to define
-     * their specific attack behavior.
-     * 
-     * @param target the creature being attacked
-     * @return the amount of damage dealt
+     * Each type of creature calculates damage differently.
+     * Subclasses have to implement this.
      */
     protected abstract int calculateDamage(Creature target);
     
     /**
-     * Attacks another creature, dealing damage based on attack power and target's defense.
-     * 
-     * @param target the creature to attack
+     * Attack another creature.
      */
     public void attack(Creature target) {
         if (!this.isAlive() || !target.isAlive()) {
@@ -95,10 +78,8 @@ public abstract class Creature implements ActionPerRound, Comparable<Creature>, 
     }
     
     /**
-     * Reduces this creature's health by the specified damage amount.
-     * Takes defense into account and handles death.
-     * 
-     * @param damage the raw damage amount
+     * Take damage from an attack.
+     * Defense reduces the damage.
      */
     public void takeDamage(int damage) {
         if (!alive) {
@@ -117,9 +98,7 @@ public abstract class Creature implements ActionPerRound, Comparable<Creature>, 
     }
     
     /**
-     * Heals this creature by the specified amount, up to max health.
-     * 
-     * @param amount the amount of health to restore
+     * Restore health. Can't go above max health.
      */
     public void heal(int amount) {
         if (!alive) {
@@ -136,11 +115,7 @@ public abstract class Creature implements ActionPerRound, Comparable<Creature>, 
     }
     
     /**
-     * Compares creatures by initiative (higher initiative acts first).
-     * This implements natural ordering for turn order determination.
-     * 
-     * @param other the other creature to compare to
-     * @return negative if this creature acts after other, positive if before, 0 if same initiative
+     * Compare by initiative - higher goes first.
      */
     @Override
     public int compareTo(Creature other) {
@@ -149,10 +124,7 @@ public abstract class Creature implements ActionPerRound, Comparable<Creature>, 
     }
     
     /**
-     * Creates a shallow copy of this creature.
-     * Note: Team enum is immutable so shallow copy is safe.
-     * 
-     * @return a clone of this creature
+     * Make a copy of this creature.
      */
     @Override
     public Creature clone() {
@@ -163,11 +135,6 @@ public abstract class Creature implements ActionPerRound, Comparable<Creature>, 
         }
     }
     
-    /**
-     * Returns a string representation of this creature including its current state.
-     * 
-     * @return a formatted string with creature details
-     */
     @Override
     public String toString() {
         return String.format("%s[id=%d, name='%s', HP=%d/%d, ATK=%d, DEF=%d, INI=%d, team=%s, alive=%s]",
@@ -175,12 +142,6 @@ public abstract class Creature implements ActionPerRound, Comparable<Creature>, 
                 attackPower, defense, initiative, team, alive);
     }
     
-    /**
-     * Checks equality based on unique ID and name.
-     * 
-     * @param obj the object to compare to
-     * @return true if objects are equal, false otherwise
-     */
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
@@ -189,11 +150,6 @@ public abstract class Creature implements ActionPerRound, Comparable<Creature>, 
         return id == creature.id && Objects.equals(name, creature.name);
     }
     
-    /**
-     * Returns hash code based on ID and name.
-     * 
-     * @return the hash code
-     */
     @Override
     public int hashCode() {
         return Objects.hash(id, name);
@@ -237,11 +193,6 @@ public abstract class Creature implements ActionPerRound, Comparable<Creature>, 
         return alive;
     }
     
-    /**
-     * Gets the health as a percentage of max health.
-     * 
-     * @return health percentage (0.0 to 1.0)
-     */
     public double getHealthPercentage() {
         return (double) health / maxHealth;
     }
