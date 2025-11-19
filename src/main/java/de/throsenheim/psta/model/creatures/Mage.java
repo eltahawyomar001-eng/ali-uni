@@ -13,27 +13,22 @@ import java.util.Random;
  */
 public class Mage extends Creature {
     
-    private static final int AOE_DAMAGE_PERCENTAGE = 60; // 60% of attack power
     private static final int MAX_AOE_TARGETS = 3;
     
     private final Random random;
-    private int manaPool;
     
     public Mage(String name, int health, int attackPower, int defense, int initiative, Team team, Random random) 
             throws InvalidCreatureStateException {
         super(name, health, attackPower, defense, initiative, team);
         this.random = random != null ? random : new Random();
-        this.manaPool = 3;  // Can do 3 AOE attacks
     }
     
-    // Magic damage varies a bit
     @Override
     protected int calculateDamage(Creature target) {
-        double variance = 0.8 + (random.nextDouble() * 0.4);
-        return (int) (getAttackPower() * variance);
+        return getAttackPower();
     }
     
-    // Does AOE if has mana, otherwise single target
+    // Attacks multiple enemies at once
     @Override
     public void performRoundAction(Battlefield battlefield) {
         if (!isAlive()) {
@@ -45,39 +40,14 @@ public class Mage extends Creature {
             return;
         }
         
-        // Use AOE if have mana and multiple enemies
-        if (manaPool > 0 && enemies.size() >= 2) {
-            performAoeAttack(enemies);
-            manaPool--;
-        } else {
-            // Single target - attack highest health
-            Creature target = enemies.stream()
-                    .max((a, b) -> Integer.compare(a.getHealth(), b.getHealth()))
-                    .orElse(null);
-            
-            if (target != null) {
-                attack(target);
-            }
-        }
-    }
-    
-    // Hit multiple enemies at once
-    private void performAoeAttack(List<Creature> enemies) {
-        System.out.println(getName() + " casts FIREBALL (AOE)!");
-        
+        // Attack up to 3 enemies
         int targetsHit = Math.min(MAX_AOE_TARGETS, enemies.size());
-        int aoeDamage = (getAttackPower() * AOE_DAMAGE_PERCENTAGE) / 100;
+        System.out.println(getName() + " casts AOE spell on " + targetsHit + " targets!");
         
         for (int i = 0; i < targetsHit; i++) {
-            Creature target = enemies.get(i);
-            if (target.isAlive()) {
-                target.takeDamage(aoeDamage);
-                System.out.println("  -> " + target.getName() + " takes " + aoeDamage + " fire damage!");
+            if (enemies.get(i).isAlive()) {
+                attack(enemies.get(i));
             }
         }
-    }
-    
-    public int getManaPool() {
-        return manaPool;
     }
 }
